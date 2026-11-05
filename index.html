@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Heavy Vehicle Tool</title>
+<meta name="theme-color" content="#222b32">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e8ebee;--panel:#fff;--ink:#182027;--mute:#5b6671;--line:#cbd2d8;--accent:#f2b705;--accent-ink:#182027;--field:#f3f5f7;--plate:#222b32;--plate-ink:#f3f5f6;--ok:#1e7a46;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12171b;--panel:#1b2329;--ink:#eef1f3;--mute:#9aa6af;--line:#303c45;--field:#12181c;--plate:#0c1013;--plate-ink:#eef1f3;--ok:#5bd08a}}
+:root[data-theme="dark"]{--bg:#12171b;--panel:#1b2329;--ink:#eef1f3;--mute:#9aa6af;--line:#303c45;--field:#12181c;--plate:#0c1013;--plate-ink:#eef1f3;--ok:#5bd08a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px 56px}
+header{background:var(--plate);color:var(--plate-ink);margin:0 -16px 24px;padding:20px 16px 22px;position:relative}
+header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:8px;background:repeating-linear-gradient(135deg,var(--accent) 0 14px,#222 14px 28px)}
+header .in{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.logo{flex:none;width:52px;height:52px;border-radius:8px;background:var(--accent);color:#182027;display:grid;place-items:center;font:700 26px/1 'Barlow Condensed',sans-serif}
+h1{font:700 clamp(30px,6vw,46px)/1 'Barlow Condensed','Arial Narrow',sans-serif;margin:0;letter-spacing:.4px}
+header p{margin:4px 0 0;color:#b4bfc7;font-size:15px}
+.step{margin:0 0 22px}
+.step>h2{display:flex;align-items:center;gap:10px;margin:0 0 10px;font:700 24px/1 'Barlow Condensed',sans-serif}
+.step>h2 i{font-style:normal;width:28px;height:28px;border-radius:50%;background:var(--plate);color:var(--accent);display:grid;place-items:center;font-size:16px}
+.step>p{margin:-4px 0 10px;color:var(--mute);font-size:14px}
+.modes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media (max-width:900px){.modes{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){.modes{grid-template-columns:1fr}}
+.modes button{text-align:left;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:12px 14px;cursor:pointer;font:inherit;min-height:84px}
+.modes button b{display:block;font:700 20px/1.1 'Barlow Condensed',sans-serif;margin-bottom:3px}
+.modes button span{font-size:13.5px;color:var(--mute);line-height:1.35;display:block}
+.modes button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 6px 0 0 var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){.grid{grid-template-columns:1fr}}
+.slot{background:var(--panel);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:8px;padding:14px}
+.slot h3{font:700 21px/1 'Barlow Condensed',sans-serif;margin:0 0 12px}
+label{display:block;font-weight:600;font-size:14px;margin:0 0 4px}
+input[type=text]{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:6px;background:var(--field);color:var(--ink);margin-bottom:10px}
+input[type=text]:last-child{margin-bottom:0}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.go{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 6px}
+.btn{font:700 20px/1 'Barlow Condensed',sans-serif;letter-spacing:.4px;border:2px solid transparent;border-radius:6px;padding:14px 24px;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.btn.alt{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.sm{font-size:17px;padding:9px 14px}
+.msg{color:var(--mute);min-height:24px;font-size:15px}
+.out{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:10px;align-items:start}
+@media (max-width:900px){.out{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;min-width:0}
+.card>.top{background:var(--plate);color:var(--plate-ink);padding:12px 16px}
+.card>.top h3{margin:0;font:700 26px/1.1 'Barlow Condensed',sans-serif}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-size:12.5px;font-weight:600;border:1px solid #475661;border-radius:99px;padding:2px 10px;color:#d6dde2}
+.chip.hl{background:var(--accent);border-color:var(--accent);color:#182027}
+.sec{padding:14px 16px;border-top:1px solid var(--line)}
+.sec h4{margin:0 0 6px;font-size:15px}
+.box{white-space:pre-wrap;background:var(--field);border:1px solid var(--line);border-radius:6px;padding:12px;font-size:15px;line-height:1.55;overflow-wrap:anywhere}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.copied{border-color:var(--ok)!important;color:var(--ok)!important}
+.allrow{grid-column:1/-1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="in">
+<div class="logo" aria-hidden="true">HV</div>
+<div><h1>Heavy Vehicle Tool</h1><p>Shredder video prompts, hook captions and hashtags for every vehicle.</p></div>
+</div></header>
+
+<section class="step">
+<h2><i>1</i>Background</h2>
+<p>Factory hall and Mix change the background randomly for every video.</p>
+<div class="modes" id="modes" role="group" aria-label="Background"></div>
+</section>
+
+<section class="step">
+<h2><i>2</i>Vehicles</h2>
+<p>Type the vehicle name and its color. Leave a slot empty to skip it.</p>
+<div class="grid" id="grid"></div>
+<div class="go">
+<button class="btn" id="gen" type="button">Generate prompts</button>
+<button class="btn alt" id="clr" type="button">Clear all</button>
+</div>
+<div class="msg" id="msg" role="status"></div>
+</section>
+
+<section class="step" id="res" hidden>
+<h2><i>3</i>Your videos</h2>
+<div class="out" id="out"></div>
+</section>
+</div>
+
+<script>
+var SC=[
+{g:'scrap',n:'Scrapyard',t:"a huge open-air scrapyard under an overcast grey sky, a long grey industrial warehouse with a pale roof and brown steel gantry towers in the background, a yellow excavator parked far behind, the ground covered with twisted metal sheets, steel beams, old tires and wheel rims"},
+{g:'junk',n:'Junk yard',t:"a huge open junk yard under a heavy grey sky, tall rows of stacked wrecked cars and rusty old buses piled behind the shredder, a high chain-link fence and a distant yard crane, muddy ground with puddles, scattered tires, car doors, bumpers and engine parts"},
+{g:'factory',n:'Workshop hall',t:"a large industrial workshop with a high steel roof, a red overhead crane rail, tall windows letting in soft daylight, an open hangar door at the back showing a small yellow loader outside, a dusty concrete floor covered with steel plates, cut pipes and scrap metal pieces"},
+{g:'factory',n:'Recycling plant',t:"the inside of a large dark metal-recycling factory hall with corrugated steel walls, tall steel support columns, hanging industrial lamps casting warm light, a yellow gantry crane high overhead, stacked scrap bales and rusty steel drums along the side walls, and a glossy concrete floor with oil stains and scattered steel scraps. Two heavy vehicles, a yellow wheel loader and a white box truck, are parked quietly inside the hall along the back wall"},
+{g:'factory',n:'Fabrication hall',t:"the inside of a bright steel fabrication hall with blue-white roof trusses, rows of skylights, stacked steel coils and welded frames along the walls, a green overhead crane, and a clean grey floor with metal offcuts. A forklift and a yellow dump truck are parked inside the hall near the back wall"},
+{g:'factory',n:'Old foundry',t:"the inside of an old brick foundry hall with tall arched windows letting dusty light beams fall across the room, rusty rails in the floor, hanging chains, a faint orange glow far in the back, and a floor strewn with metal chunks and ash. One large yellow wheel loader is parked inside the hall in the background"}
+];
+var MODES=[
+{k:'factory',n:'Factory hall',d:'4 interiors, a different one for each video'},
+{k:'scrap',n:'Scrapyard',d:'Open yard with warehouse and gantry towers'},
+{k:'junk',n:'Junk yard',d:'Wrecked cars and buses piled behind a fence'},
+{k:'mix',n:'Mix all',d:'Random pick from every background'}
+];
+var HOOKS=[
+"Wait for the end… this {x} did not stand a chance 😳💥",
+"Nobody expected this {x} to disappear like that 😱",
+"The most satisfying thing you will watch today: {x} vs the shredder 🤤⚙️",
+"Watch this {x} get destroyed piece by piece 🔥",
+"Your brain needs this: a {x} meets the shredder 🧠✨",
+"You will not blink until this {x} is completely gone 👀",
+"This {x} went in whole… look what came out 🤯",
+"Stay until the last second, this {x} ending is unreal 😮‍💨"
+];
+var OUTROS=["Full destruction, zero leftovers 💥✅","Headphones on for the full ASMR 🎧🔊","Comment the next vehicle to crush 👇🚜","So satisfying, you will watch it twice 😌🔁","Which one should we crush next? 🤔👇"];
+var mode='factory',data=[];
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function pool(){return SC.filter(function(s){return mode==='mix'||s.g===mode})}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function assign(){var p=shuffle(pool());data.forEach(function(it,i){it.sc=p[i%p.length]})}
+function hook(not){var h,t=0;do{h=pick(HOOKS);t++}while(h===not&&t<20);return h}
+function tag(v){return '#'+v.toLowerCase().replace(/[^a-z0-9]/g,'')}
+function label(it){return (it.color?it.color+' ':'')+it.name}
+function caption(it){
+ if(it.hook==null)it.hook=hook();
+ var tags=[tag(it.name),'#satisfying','#asmrcrushing','#shredder','#heavymachinery'];
+ return it.hook.replace('{x}',label(it))+' '+(it.outro||(it.outro=pick(OUTROS)))+'\n\n'+tags.join(' ');
+}
+function prompt(it){
+ var col=it.color?'The '+it.name+' has a clearly visible '+it.color+' paint finish. ':'';
+ return 'Vertical 9:16 realistic video, 10 seconds, ultra detailed, 4K look. Locked static camera, front view, no camera movement. '+
+ 'Setting: '+it.sc.t+'. In the lower half of the frame sits a giant twin-shaft industrial metal shredder with a rusty, scratched steel hopper and two huge interlocking shafts with heavy steel cutter discs.\n\n'+
+ 'Subject: a full-size '+label(it)+', shown in full from the front, parked at the top edge of the shredder hopper. '+col+'\n\n'+
+ 'Action: 0-2s the '+it.name+' slowly rolls forward to the hopper edge. 2-4s its front drops into the hopper and the rotating blades grab it. 4-8s the shafts pull the whole body down, the metal bends, tears and folds, glass shatters, tires burst and are dragged in, and sparks, dust and metal fragments fly. 8-10s the last pieces are swallowed.\n\n'+
+ 'Ending: the '+it.name+' is completely destroyed. No recognizable part is left in frame, only the empty hopper with the cutter shafts slowing to a stop, a few small scrap pieces on the blades, and dust settling in the air. Calm, clean and deeply satisfying final shot.\n\n'+
+ 'Sound: heavy deep metal grinding, crunching and tearing, glass cracking, tires popping, low machine hum, ASMR style.';
+}
+function esc(s){return s.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+function fb(t){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(a)}
+function copy(text,btn){
+ var done=function(){var o=btn.textContent;btn.textContent='Copied';btn.classList.add('copied');setTimeout(function(){btn.textContent=o;btn.classList.remove('copied')},1400)};
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done,function(){fb(text);done()})}else{fb(text);done()}
+}
+
+var grid=document.getElementById('grid');
+for(var i=1;i<=4;i++){
+ var d=document.createElement('div');d.className='slot';
+ d.innerHTML='<h3>Vehicle '+i+'</h3><label for="v'+i+'">Vehicle name</label><input type="text" id="v'+i+'" autocomplete="off" placeholder="e.g. Bulldozer"><label for="c'+i+'">Color</label><input type="text" id="c'+i+'" autocomplete="off" placeholder="e.g. Yellow">';
+ grid.appendChild(d);
+}
+var modesEl=document.getElementById('modes');
+MODES.forEach(function(m){
+ var b=document.createElement('button');b.type='button';b.setAttribute('aria-pressed',m.k===mode);
+ b.innerHTML='<b>'+m.n+'</b><span>'+m.d+'</span>';
+ b.onclick=function(){mode=m.k;modesEl.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});if(data.length){assign();render()}};
+ modesEl.appendChild(b);
+});
+
+function render(){
+ var out=document.getElementById('out');out.innerHTML='';
+ document.getElementById('res').hidden=!data.length;
+ data.forEach(function(it,idx){
+  var c=document.createElement('div');c.className='card';
+  var p=prompt(it),cap=caption(it),multi=pool().length>1;
+  c.innerHTML='<div class="top"><h3>'+(idx+1)+'. '+esc(label(it))+'</h3><div class="chips"><span class="chip hl">'+esc(it.sc.n)+'</span><span class="chip">9:16 vertical</span><span class="chip">10 seconds</span></div></div>'+
+  '<div class="sec"><h4>Video prompt</h4><div class="box">'+esc(p)+'</div><div class="row"><button class="btn sm" data-k="p">Copy prompt</button>'+(multi?'<button class="btn sm alt" data-k="b">New background</button>':'')+'</div></div>'+
+  '<div class="sec"><h4>Caption and hashtags</h4><div class="box">'+esc(cap)+'</div><div class="row"><button class="btn sm" data-k="c">Copy caption</button><button class="btn sm alt" data-k="h">New hook</button></div></div>';
+  c.querySelectorAll('button').forEach(function(b){b.onclick=function(){
+   var k=b.dataset.k;
+   if(k==='p')copy(p,b);
+   else if(k==='c')copy(cap,b);
+   else if(k==='h'){it.hook=hook(it.hook);render()}
+   else{var o=pool().filter(function(s){return s!==it.sc});if(o.length)it.sc=pick(o);render()}
+  }});
+  out.appendChild(c);
+ });
+ if(data.length>1){
+  var w=document.createElement('div');w.className='allrow';
+  var all=document.createElement('button');all.className='btn alt';all.textContent='Copy all prompts and captions';
+  all.onclick=function(){copy(data.map(function(it,i){return 'VIDEO '+(i+1)+': '+label(it)+'\n'+prompt(it)+'\n\nCAPTION\n'+caption(it)}).join('\n\n----------\n\n'),all)};
+  w.appendChild(all);out.appendChild(w);
+ }
+}
+function generate(){
+ data=[];
+ for(var i=1;i<=4;i++){
+  var n=document.getElementById('v'+i).value.trim(),c=document.getElementById('c'+i).value.trim();
+  if(n)data.push({name:n,color:c,hook:null,outro:null,sc:null});
+ }
+ var m=document.getElementById('msg');
+ if(!data.length){m.textContent='Enter at least one vehicle name to generate a prompt.';render();return}
+ m.textContent=data.length+' prompt'+(data.length>1?'s':'')+' ready.';
+ assign();render();
+ document.getElementById('res').scrollIntoView({behavior:'smooth'});
+}
+document.getElementById('gen').onclick=generate;
+document.getElementById('grid').addEventListener('keydown',function(e){if(e.key==='Enter')generate()});
+document.getElementById('clr').onclick=function(){
+ for(var i=1;i<=4;i++){document.getElementById('v'+i).value='';document.getElementById('c'+i).value=''}
+ data=[];render();document.getElementById('msg').textContent='';
+};
+</script>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
+</script>
+</body>
+</html>
